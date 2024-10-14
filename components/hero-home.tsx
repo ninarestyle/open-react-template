@@ -1,7 +1,17 @@
-import VideoThumb from "@/public/images/hero-image-01.jpg";
-import ModalVideo from "@/components/modal-video";
+import { useState } from "react";
 
 export default function HeroHome() {
+  // State variables for storing input values
+  const [brand, setBrand] = useState<string>("");
+  const [pictures, setPictures] = useState<FileList | null>(null);
+  const [condition, setCondition] = useState<string>("");
+  const [size, setSize] = useState<string>("");
+
+  // Handler functions for inputs
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPictures(e.target.files);
+  };
+
   return (
     <section>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -10,55 +20,80 @@ export default function HeroHome() {
           {/* Section header */}
           <div className="pb-12 text-center md:pb-20">
             <h1
-              className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,theme(colors.gray.200),theme(colors.indigo.200),theme(colors.gray.50),theme(colors.indigo.300),theme(colors.gray.200))] bg-[length:200%_auto] bg-clip-text pb-5 font-nacelle text-4xl font-semibold text-transparent md:text-5xl"
+              className="text-4xl font-semibold text-gray-900 md:text-5xl"
               data-aos="fade-up"
             >
-              AI-driven tools for product teams
+              Resale Price Lookup
             </h1>
             <div className="mx-auto max-w-3xl">
-              <p
-                className="mb-8 text-xl text-indigo-200/65"
-                data-aos="fade-up"
-                data-aos-delay={200}
-              >
-                Our landing page template works on all devices, so you only have
-                to set it up once, and get beautiful results forever.
-              </p>
-              <div className="mx-auto max-w-xs sm:flex sm:max-w-none sm:justify-center">
-                <div data-aos="fade-up" data-aos-delay={400}>
-                  <a
-                    className="btn group mb-4 w-full bg-gradient-to-t from-indigo-600 to-indigo-500 bg-[length:100%_100%] bg-[bottom] text-white shadow-[inset_0px_1px_0px_0px_theme(colors.white/.16)] hover:bg-[length:100%_150%] sm:mb-0 sm:w-auto"
-                    href="#0"
-                  >
-                    <span className="relative inline-flex items-center">
-                      Start Building
-                      <span className="ml-1 tracking-normal text-white/50 transition-transform group-hover:translate-x-0.5">
-                        -&gt;
-                      </span>
-                    </span>
-                  </a>
+              <form className="mt-8 space-y-6" data-aos="fade-up" data-aos-delay={200}>
+                <div>
+                  <label htmlFor="brand" className="block text-sm font-medium text-gray-700">
+                    Brand
+                  </label>
+                  <input
+                    type="text"
+                    id="brand"
+                    name="brand"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    value={brand}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBrand(e.target.value)}
+                  />
                 </div>
-                <div data-aos="fade-up" data-aos-delay={600}>
-                  <a
-                    className="btn relative w-full bg-gradient-to-b from-gray-800 to-gray-800/60 bg-[length:100%_100%] bg-[bottom] text-gray-300 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(to_right,theme(colors.gray.800),theme(colors.gray.700),theme(colors.gray.800))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] hover:bg-[length:100%_150%] sm:ml-4 sm:w-auto"
-                    href="#0"
-                  >
-                    Schedule Demo
-                  </a>
+
+                <div>
+                  <label htmlFor="pictures" className="block text-sm font-medium text-gray-700">
+                    Upload Pictures
+                  </label>
+                  <input
+                    type="file"
+                    id="pictures"
+                    name="pictures"
+                    className="mt-1 block w-full"
+                    onChange={handleFileChange}
+                    multiple
+                  />
                 </div>
-              </div>
+
+                <div>
+                  <label htmlFor="condition" className="block text-sm font-medium text-gray-700">
+                    Condition
+                  </label>
+                  <input
+                    type="text"
+                    id="condition"
+                    name="condition"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    value={condition}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCondition(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="size" className="block text-sm font-medium text-gray-700">
+                    Size
+                  </label>
+                  <input
+                    type="text"
+                    id="size"
+                    name="size"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    value={size}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSize(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <button
+                    type="submit"
+                    className="btn w-full bg-indigo-600 text-white hover:bg-indigo-700"
+                  >
+                    Lookup Price
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-
-          <ModalVideo
-            thumb={VideoThumb}
-            thumbWidth={1104}
-            thumbHeight={576}
-            thumbAlt="Modal video thumbnail"
-            video="videos//video.mp4"
-            videoWidth={1920}
-            videoHeight={1080}
-          />
         </div>
       </div>
     </section>
