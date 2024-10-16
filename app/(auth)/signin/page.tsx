@@ -1,41 +1,32 @@
-import { useEffect } from "react";
-import { useRouter } from "next/router";
-import Link from "next/link";
+"use client";
 
-export const metadata = {
-  title: "Sign In - Open PRO",
-  description: "Page description",
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignIn() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if the user is already logged in by looking for a JWT token
     const jwtToken = localStorage.getItem("jwtToken");
-
     if (jwtToken) {
-      // If the user is already logged in, redirect to the lookup page
       router.push("/lookup");
     }
   }, [router]);
 
-  // Function to handle Google Login
   const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google"; // Redirect to Google login endpoint
+    window.location.href = "/api/auth/google";
   };
 
   return (
     <section>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="py-12 md:py-20">
-          {/* Section header */}
           <div className="pb-12 text-center">
             <h1 className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,theme(colors.gray.200),theme(colors.indigo.200),theme(colors.gray.50),theme(colors.indigo.300),theme(colors.gray.200))] bg-[length:200%_auto] bg-clip-text font-nacelle text-3xl font-semibold text-transparent md:text-4xl">
               Welcome back
             </h1>
           </div>
-          {/* Google Sign In */}
           <div className="mx-auto max-w-[400px]">
             <div className="space-y-5">
               <button
@@ -46,7 +37,6 @@ export default function SignIn() {
               </button>
             </div>
           </div>
-          {/* Bottom link */}
           <div className="mt-6 text-center text-sm text-indigo-200/65">
             Don't have an account?{" "}
             <Link className="font-medium text-indigo-500" href="/signup">

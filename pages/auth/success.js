@@ -17,7 +17,7 @@ export default function AuthSuccess ()
         if ( accessToken && idToken )
         {
             // Make a POST request to exchange the Google access token for a JWT
-            fetch( `${process.env.APP_URL}/auth/google/token`, {
+            fetch( `${process.env.NEXT_PUBLIC_APP_URL}/auth/google/token`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

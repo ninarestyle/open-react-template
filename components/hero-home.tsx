@@ -37,12 +37,9 @@ export default function HeroHome() {
 
   // Load JWT token and form data from localStorage on mount
   useEffect(() => {
-    console.log("useEffect triggered");
-
     try {
       const token = localStorage.getItem("jwtToken");
       if (token) {
-        console.log("JWT token:", token);
         setJwtToken(token);
         setIsAuthenticated(true);
       }
@@ -85,7 +82,7 @@ export default function HeroHome() {
 
     try {
       const response = await fetch(
-        `${process.env.APP_URL}/media/upload-media-files`,
+        `${process.env.NEXT_PUBLIC_APP_URL}/media/upload-media-files`,
         {
           method: "POST",
           headers: {
@@ -143,7 +140,7 @@ export default function HeroHome() {
 
     try {
       const response = await fetch(
-        `${process.env.APP_URL}/ai-assistant/estimate-resale-price`,
+        `${process.env.NEXT_PUBLIC_APP_URL}/ai-assistant/estimate-resale-price`,
         {
           method: "POST",
           headers: {
