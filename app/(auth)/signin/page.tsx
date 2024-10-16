@@ -1,11 +1,30 @@
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+
 export const metadata = {
   title: "Sign In - Open PRO",
   description: "Page description",
 };
 
-import Link from "next/link";
-
 export default function SignIn() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the user is already logged in by looking for a JWT token
+    const jwtToken = localStorage.getItem("jwtToken");
+
+    if (jwtToken) {
+      // If the user is already logged in, redirect to the lookup page
+      router.push("/lookup");
+    }
+  }, [router]);
+
+  // Function to handle Google Login
+  const handleGoogleLogin = () => {
+    window.location.href = "/api/auth/google"; // Redirect to Google login endpoint
+  };
+
   return (
     <section>
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -19,7 +38,10 @@ export default function SignIn() {
           {/* Google Sign In */}
           <div className="mx-auto max-w-[400px]">
             <div className="space-y-5">
-              <button className="btn relative w-full bg-gradient-to-b from-gray-800 to-gray-800/60 bg-[length:100%_100%] bg-[bottom] text-gray-300 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(to_right,theme(colors.gray.800),theme(colors.gray.700),theme(colors.gray.800))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] hover:bg-[length:100%_150%]">
+              <button
+                onClick={handleGoogleLogin}
+                className="btn relative w-full bg-gradient-to-b from-gray-800 to-gray-800/60 bg-[length:100%_100%] bg-[bottom] text-gray-300 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(to_right,theme(colors.gray.800),theme(colors.gray.700),theme(colors.gray.800))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] hover:bg-[length:100%_150%]"
+              >
                 Sign In with Google
               </button>
             </div>
