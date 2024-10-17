@@ -109,6 +109,11 @@ export default function HeroHome() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
 
+    if (!brand || !pictures || !condition || !size) {
+      alert("All fields are required. Please fill in the brand, upload pictures, select condition, and enter size.");
+      return;
+    }
+
     const requestData = {
       brand,
       condition,
@@ -163,12 +168,6 @@ export default function HeroHome() {
       setIsLoading(false); // Set loading state to false
     }
   };
-
-  useEffect(() => {
-    if (isAuthenticated && !pictures) {
-      alert("Reminder: Please upload pictures to complete the submission.");
-    }
-  }, [isAuthenticated, pictures]);
 
   return (
     <section className="bg-gray-100 py-12 md:py-20">
@@ -235,7 +234,7 @@ export default function HeroHome() {
                     htmlFor="condition"
                     className="block text-lg font-bold text-gray-800"
                   >
-                    Condition (Optional)
+                    Condition
                   </label>
                   <select
                     id="condition"
