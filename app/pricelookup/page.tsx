@@ -2,16 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter from Next.js
+import { ListingApparelConditionEnum } from "./enum";
 
-export enum ListingApparelConditionEnum {
-    BrandNew = 0,
-    Unused = 1,
-    Excellent = 2,
-    VeryGood = 3,
-    Good = 4,
-    Fair = 5,
-    Used = 6,
-}
 
 export default function HeroHome() {
     const router = useRouter(); // Initialize useRouter

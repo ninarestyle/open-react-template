@@ -2,24 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter from Next.js
+import { MarketplaceEnum, PreferredCategoryEnum } from "./enum";
 
-// Enums for Marketplace and Preferred Category
-export enum MarketplaceEnum {
-    eBay = "ebay",
-    Poshmark = "poshmark",
-    Depop = "depop",
-    ThredUp = "thredUp",
-    Mercari = "eercari",
-    Grailed = "grailed",
-    FacebookMarketplace = "facebook marketplace"
-}
-
-export enum PreferredCategoryEnum {
-    Shoes = "shoes",
-    Bags = "bags",
-    Clothing = "clothing",
-    Accessories = "accessories",
-}
 
 export default function ResaleGuide() {
     const router = useRouter(); // Initialize useRouter
