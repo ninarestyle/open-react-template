@@ -1,19 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter from Next.js
+import { useRouter } from "next/navigation";
 import { ListingApparelConditionEnum } from "./enum";
 
-
 export default function HeroHome() {
-    const router = useRouter(); // Initialize useRouter
-    // State variables for storing input values
+    const router = useRouter();
     const [brand, setBrand] = useState<string>("");
     const [pictures, setPictures] = useState<FileList | null>(null);
     const [condition, setCondition] = useState<number | "">("");
     const [size, setSize] = useState<string>("");
 
-    // State for storing the API response
     const [apiResponse, setApiResponse] = useState<{
         price?: string;
         description?: string;
@@ -21,14 +18,11 @@ export default function HeroHome() {
         brandInfo?: string;
     } | null>(null);
 
-    // Loading state
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    // User authentication state
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [jwtToken, setJwtToken] = useState<string | null>(null);
+    const [lastSubmittedData, setLastSubmittedData] = useState<string>("");
 
-    // Load JWT token and form data from localStorage on mount
     useEffect(() => {
         try {
             const token = localStorage.getItem("jwtToken");
@@ -43,28 +37,19 @@ export default function HeroHome() {
                 setBrand(brand);
                 setCondition(condition);
                 setSize(size);
-                localStorage.removeItem("pendingFormData"); // Clear the saved data after loading
+                localStorage.removeItem("pendingFormData");
             }
         } catch (error) {
             console.error("Error accessing localStorage:", error);
         }
     }, []);
 
-    // Function to handle Google Login redirect
     const handleGoogleLogin = () => {
-        // Save the current form data to localStorage
-        const formData = {
-            brand,
-            condition,
-            size,
-        };
+        const formData = { brand, condition, size };
         localStorage.setItem("pendingFormData", JSON.stringify(formData));
-
-        // Redirect to Google login endpoint
         window.location.href = "/api/auth/google";
     };
 
-    // Handle picture upload
     const handlePictureUpload = async (files: FileList | null) => {
         if (!files) return [];
 
@@ -78,63 +63,49 @@ export default function HeroHome() {
                 `${process.env.NEXT_PUBLIC_APP_URL}/media/upload-media-files`,
                 {
                     method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${jwtToken}`, // Use the actual JWT token
-                    },
+                    headers: { Authorization: `Bearer ${jwtToken}` },
                     body: formData,
                 }
             );
 
-            if (!response.ok) {
-                throw new Error("Failed to upload pictures");
-            }
+            if (!response.ok) throw new Error("Failed to upload pictures");
 
             const data = await response.json();
             const urls = data.data?.payload?.urls;
-            return urls; // Assuming the response contains an array of URLs
+            return urls;
         } catch (error) {
             console.error("Error uploading pictures:", error);
             return [];
         }
     };
 
-    // Handle form submission
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // Prevent default form submission
-
-        if (!brand || !pictures || !condition || !size) {
-            alert("All fields are required. Please fill in the brand, upload pictures, select condition, and enter size.");
-            return;
-        }
-
-        const requestData = {
-            brand,
-            condition,
-            size,
-            images: pictures,
-        };
+        e.preventDefault();
 
         if (!isAuthenticated) {
             alert("Please log in first.");
-            handleGoogleLogin(); // Redirect to Google login
+            handleGoogleLogin();
             return;
         }
 
-        console.log("logged in already");
+        const currentFormData = JSON.stringify({ brand, condition, size, pictures });
 
-        setIsLoading(true); // Set loading state to true
+        if (currentFormData === lastSubmittedData) {
+            alert("You've already submitted this data. Please change the input to submit again.");
+            return;
+        }
 
-        // Upload pictures and get URLs
+        setIsLoading(true);
+
         const uploadedPictures = await handlePictureUpload(pictures);
 
         if (!uploadedPictures || uploadedPictures.length === 0) {
             console.error("No pictures were uploaded successfully.");
-            setIsLoading(false); // Set loading state to false
+            setIsLoading(false);
             return;
         }
 
-        // Update requestData with uploaded pictures
-        requestData.images = uploadedPictures;
+        const requestData = { brand, condition, size, images: uploadedPictures };
 
         try {
             const response = await fetch(
@@ -143,109 +114,84 @@ export default function HeroHome() {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${jwtToken}`, // Use the actual JWT token
+                        Authorization: `Bearer ${jwtToken}`,
                     },
                     body: JSON.stringify(requestData),
                 }
             );
 
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
+            if (!response.ok) throw new Error("Network response was not ok");
 
             const data = await response.json();
-            setApiResponse(data); // Update the state with the API response
+            setApiResponse(data);
+
+            // Update the last submitted data to prevent duplicate submissions
+            setLastSubmittedData(currentFormData);
         } catch (error) {
             console.error("Error fetching resale price:", error);
         } finally {
-            setIsLoading(false); // Set loading state to false
+            setIsLoading(false);
         }
     };
 
+    const formIsValid = brand && pictures && condition && size;
+
     return (
-        <section className="bg-gray-100 py-12 md:py-20">
+        <section className="bg-gray-200 py-12 md:py-20">
             <div className="mx-auto max-w-6xl px-4 sm:px-6">
-                {/* Back to Home Button */}
                 <div className="mb-6">
                     <button
                         onClick={() => router.push("/")}
-                        className="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 transition-colors"
+                        className="bg-gray-700 text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-colors"
                     >
                         Back to Home
                     </button>
                 </div>
-                {/* Hero content */}
                 <div className="py-12 md:py-20">
-                    {/* Section header */}
                     <div className="pb-12 md:pb-20">
-                        <h1
-                            className="text-4xl font-semibold text-gray-900 md:text-5xl"
-                            data-aos="fade-up"
-                        >
+                        <h1 className="text-4xl font-semibold text-gray-900 md:text-5xl">
                             Resale Price Lookup
                         </h1>
-
                         <div className="mx-auto max-w-3xl bg-white p-8 rounded-md shadow-md">
-                            {/* Resale Price Lookup Form */}
-                            <form
-                                className="mt-8 space-y-6"
-                                data-aos="fade-up"
-                                data-aos-delay={200}
-                                onSubmit={handleSubmit}
-                            >
+                            <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                                {/* Brand Input */}
                                 <div>
-                                    <label
-                                        htmlFor="brand"
-                                        className="block text-lg font-bold text-gray-800"
-                                    >
+                                    <label htmlFor="brand" className="block text-lg font-bold text-gray-800">
                                         Brand
                                     </label>
                                     <input
                                         type="text"
                                         id="brand"
-                                        name="brand"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 font-semibold focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-gray-600 text-gray-900"
                                         value={brand}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                            setBrand(e.target.value)
-                                        }
+                                        onChange={(e) => setBrand(e.target.value)}
                                     />
                                 </div>
 
+                                {/* Picture Upload */}
                                 <div>
-                                    <label
-                                        htmlFor="pictures"
-                                        className="block text-lg font-bold text-gray-800"
-                                    >
+                                    <label htmlFor="pictures" className="block text-lg font-bold text-gray-800">
                                         Upload Pictures
                                     </label>
                                     <input
                                         type="file"
                                         id="pictures"
-                                        name="pictures"
-                                        className="mt-1 block w-full text-gray-900 font-semibold"
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                            setPictures(e.target.files)
-                                        }
                                         multiple
+                                        className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-gray-600 text-gray-900"
+                                        onChange={(e) => setPictures(e.target.files)}
                                     />
                                 </div>
 
+                                {/* Condition Dropdown */}
                                 <div>
-                                    <label
-                                        htmlFor="condition"
-                                        className="block text-lg font-bold text-gray-800"
-                                    >
+                                    <label htmlFor="condition" className="block text-lg font-bold text-gray-800">
                                         Condition
                                     </label>
                                     <select
                                         id="condition"
-                                        name="condition"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 font-semibold focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-indigo-700 text-gray-900"
                                         value={condition}
-                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                            setCondition(e.target.value === "" ? "" : Number(e.target.value))
-                                        }
+                                        onChange={(e) => setCondition(e.target.value === "" ? "" : Number(e.target.value))}
                                     >
                                         <option value="">Select Condition</option>
                                         <option value={ListingApparelConditionEnum.BrandNew}>Brand New</option>
@@ -258,57 +204,40 @@ export default function HeroHome() {
                                     </select>
                                 </div>
 
+                                {/* Size Input */}
                                 <div>
-                                    <label
-                                        htmlFor="size"
-                                        className="block text-lg font-bold text-gray-800"
-                                    >
+                                    <label htmlFor="size" className="block text-lg font-bold text-gray-800">
                                         Size
                                     </label>
                                     <input
                                         type="text"
                                         id="size"
-                                        name="size"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 font-semibold focus:border-indigo-500 focus:ring-indigo-500"
+                                        className="mt-1 block w-full rounded-md border-gray-400 shadow-sm focus:border-gray-600 text-gray-900"
                                         value={size}
-                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                            setSize(e.target.value)
-                                        }
+                                        onChange={(e) => setSize(e.target.value)}
                                     />
                                 </div>
 
+                                {/* Submit Button */}
                                 <div>
                                     <button
                                         type="submit"
-                                        className="btn w-full bg-indigo-600 text-white hover:bg-indigo-700"
-                                        disabled={isLoading}
+                                        className={`btn w-full text-white ${formIsValid && !isLoading ? 'bg-indigo-800 hover:bg-indigo-900' : 'bg-gray-500 cursor-not-allowed'}`}
+                                        disabled={!formIsValid || isLoading}
                                     >
                                         {isLoading ? "Loading..." : "Lookup Price"}
                                     </button>
                                 </div>
-
-
                             </form>
 
-                            {/* Display the API Response */}
+                            {/* Display API Response */}
                             {apiResponse && (
-                                <div className="mt-10 p-6 bg-gray-50 rounded-md shadow-sm">
-                                    <h2 className="text-2xl font-semibold text-gray-900">
-                                        Resale Price Details:
-                                    </h2>
-                                    <p className="mt-4 text-lg text-gray-800">
-                                        <strong>Price:</strong> {apiResponse.price}
-                                    </p>
-
-                                    <p className="mt-2 text-lg text-gray-800">
-                                        <strong>Suggested Listing Description:</strong> {apiResponse.description}
-                                    </p>
-                                    <p className="mt-2 text-lg text-gray-800">
-                                        <strong>Suggested Marketplace:</strong> {apiResponse.suggestedMarketplaces}
-                                    </p>
-                                    <p className="mt-2 text-lg text-gray-800">
-                                        <strong>Brand Information:</strong> {apiResponse.brandInfo}
-                                    </p>
+                                <div className="mt-10 p-6 bg-gray-100 rounded-md shadow-sm">
+                                    <h2 className="text-2xl font-semibold text-gray-900">Resale Price Details:</h2>
+                                    <p className="mt-4 text-lg text-gray-800"><strong>Price:</strong> {apiResponse.price}</p>
+                                    <p className="mt-2 text-lg text-gray-800"><strong>Description:</strong> {apiResponse.description}</p>
+                                    <p className="mt-2 text-lg text-gray-800"><strong>Marketplace:</strong> {apiResponse.suggestedMarketplaces}</p>
+                                    <p className="mt-2 text-lg text-gray-800"><strong>Brand Info:</strong> {apiResponse.brandInfo}</p>
                                 </div>
                             )}
                         </div>
@@ -316,5 +245,6 @@ export default function HeroHome() {
                 </div>
             </div>
         </section>
+
     );
 }
