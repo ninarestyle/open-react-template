@@ -140,7 +140,7 @@ export default function ResaleGuide() {
                             htmlFor="marketplace"
                             className="block text-lg font-bold text-gray-800 text-left"
                         >
-                            Marketplace
+                            Where you consider to list
                         </label>
                         <select
                             id="marketplace"
@@ -167,7 +167,7 @@ export default function ResaleGuide() {
                             htmlFor="preferredCategory"
                             className="block text-lg font-bold text-gray-800 text-left"
                         >
-                            Preferred Category
+                            Which category you consider to sell
                         </label>
                         <select
                             id="preferredCategory"
